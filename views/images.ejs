@@ -9,7 +9,7 @@
   <body>
   	<div class="container">
   		<div class="row">
-  			<h1>Upload Images</h1>
+  			<h1 class="text-center">Upload Images</h1>
   
         <div class="mb-3">
 					<form action="/images/upload" method="post" enctype="multipart/form-data">
@@ -21,9 +21,20 @@
 					</form>
         </div>	
 
-				<% images.forEach(image => { %>
-            <img src=<%= image %> alt="">
-				<% }) %>
+        <div class="card-group">
+					<% images.forEach(image => { %>
+            <div class="card">
+							<img src=<%= image %> class="card-image-top" alt="">
+              <div class="card-body">
+                <h5 class="card-title">Card title</h5>
+                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+              </div>
+              <div class="card-footer">
+                <small class="text-muted">Last updated 3 mins ago</small>
+              </div>
+            </div>
+					<% }) %>
+        </div>
 
   		</div>
   	</div>
