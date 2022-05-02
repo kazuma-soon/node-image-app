@@ -16,6 +16,7 @@ const client = new Client({
 });
 client.connect();
 
+//　ログインストラテジー
 passport.use(new LocalStrategy(function verify(username, password, cb) {
 	client
 	  .query('SELECT * FROM users WHERE username = $1', [username])
@@ -35,6 +36,38 @@ passport.use(new LocalStrategy(function verify(username, password, cb) {
       return cb(err);
 		})
 }));
+// --
+
+// サインアップストラテジー
+passport.use('local-signup', new LocalStrategy(function verify(username, password, cb) {
+	console.log('here local-signup', username, password)
+	client
+	  .query('SELECT * FROM users WHERE username = $1', [username])
+	  .then(results => {
+      if (results.rows.length > 0) {
+				console.log('username is already taken!');
+				return cb(null, false);
+			}
+			else {
+			  client
+			  	.query('INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *',
+			               [username, password])
+			    .then(results => {
+			  		console.log('signup strategy clear!', results.rows[0]);
+			  		return cb(null, results.rows[0]);
+			  	})
+			    .catch(e => { 
+			  		console.error(e);
+			  	  return cb(null, false)
+			  	})
+			}
+		})
+	  .catch(e => {
+			console.error(e);
+			res.render('signup.ejs');
+		})
+}))
+// --
 
 passport.serializeUser(function(user, cb) {
   process.nextTick(function() {
@@ -75,5 +108,58 @@ router.get('/logout', function(req, res, next) {
   req.logout();
   res.redirect('/login');
 });
+
+router.get('/signup', function(req, res, next) {
+	res.render('signup.ejs');
+})
+
+router.post('/signup', passport.authenticate('local-signup',
+  {
+		successRedirect: '/images',
+		failureRedirect: '/signup',
+	}
+))
+
+// router.post('/signup', function(req, res, next) {
+// 	const username = req.body.username;
+// 	const password = req.body.password;
+// 	const password_confirmation = req.body.password_confirmation;
+// 	client
+// 	  .query('SELECT * FROM users WHERE username = $1', [username])
+// 	  .then(results => {
+// 			if (results.rows.length > 0) {
+// 				res.redirect('/signup');
+// 				console.log('username is already taken!');
+// 			}
+// 
+// 			else if (username === '' || password === '' || password_confirmation === '') {
+//     		console.error('form can not be blank!');
+//     		res.render('signup.js');
+//     	}
+//     	else if (password !== password_confirmation) {
+//         console.log('password and password_confirmation must be same!')
+//     		res.render('signup.ejs');
+//     	}
+//     	else {
+//         client
+//     		  .query('INSERT INTO users (username, password) VALUES ($1, $2)',
+//     			       [username, password])
+//     		  .then(results => {
+//     				passport.authenticate('local'), function(req, res) {
+//               res.redirect('/images');
+//             }
+//     			})
+//     		  .catch(e => {
+//     				console.error('Something wrong!');
+//     			})
+//     	}
+//   })
+// 	.catch(e => {
+// 		console.error(e);
+// 		res.render('signup.ejs');
+// 	})
+// })
+
+
 
 module.exports = router;
