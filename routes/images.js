@@ -16,14 +16,14 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 // -- pg
-const { Client } = require('pg');
-const client = new Client({
-	user: 'postgres',
-  host: 'localhost',
-  database: 'node_image_app',
-  port: 5432,
-});
-client.connect();
+//const { Client } = require('pg');
+//const client = new Client({
+//	user: 'postgres',
+//  host: 'localhost',
+//  database: 'node_image_app',
+//  port: 5432,
+//});
+//client.connect();
 
 // Get images
 router.get('/images', (req, res, next) => {
