@@ -12,7 +12,7 @@
   			<h1>Upload Images</h1>
   
         <div class="mb-3">
-					<form action="/images" method="post">
+					<form action="/images/upload" method="post" enctype="multipart/form-data">
         	  <label class="form-label" for="file">ファイル</label>
             <div class="input-group">
             	<input type="file" class="form-control" name="image" >
@@ -21,8 +21,8 @@
 					</form>
         </div>	
 
-				<% imgs.forEach(img => { %>
-				  <%= img.img %>  
+				<% images.forEach(image => { %>
+            <img src=<%= image %> alt="">
 				<% }) %>
 
   		</div>
