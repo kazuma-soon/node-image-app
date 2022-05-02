@@ -6,4 +6,8 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+router.post('/', (req, res, next) => {
+	res.redirect('/images');
+})
+
 module.exports = router;
