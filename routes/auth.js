@@ -109,15 +109,13 @@ router.get('/logout', function(req, res, next) {
 });
 
 router.get('/signup', function(req, res, next) {
-        res.render('signup.ejs');
+  res.render('signup.ejs');
 })
 
-router.post('/signup', passport.authenticate('local-signup',
-  {
-                successRedirect: '/images',
-                failureRedirect: '/signup',
-        }
-))
+router.post('/signup', passport.authenticate('local-signup',{
+  successRedirect: '/images',
+  failureRedirect: '/signup',
+}))
 
 // router.post('/signup', function(req, res, next) {
 //      const username = req.body.username;
