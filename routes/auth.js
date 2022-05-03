@@ -18,66 +18,65 @@ client.connect();
 
 //　ログインストラテジー
 passport.use(new LocalStrategy(function verify(username, password, cb) {
-	client
-	  .query('SELECT * FROM users WHERE username = $1', [username])
-	  .then(results => {
+  client
+    .query('SELECT * FROM users WHERE username = $1', [username])
+    .then(results => {
       if (results.rows.length === 0) {
-				console.log('Results is empty. Login failed');
-				return cb(null, false);
-			}
-			if (results.rows[0].password !== password) {
-				console.log('Password wrong. Login failed');
+        console.log('Results is empty. Login failed');
         return cb(null, false);
-			}
-			console.log('LocalStrategy called!', results.rows[0]);
-			return cb(null, results.rows[0]);
-		})
-	  .catch(e => {
-      return cb(err);
-		})
+      }
+      if (results.rows[0].password !== password) {
+        console.log('Password wrong. Login failed');
+        return cb(null, false);
+      }
+      console.log('LocalStrategy called!', results.rows[0]);
+      return cb(null, results.rows[0]);
+      })
+      .catch(e => {
+        return cb(err);
+      })
 }));
-// --
 
 // サインアップストラテジー
 passport.use('local-signup', new LocalStrategy(function verify(username, password, cb) {
-	console.log('here local-signup', username, password)
-	client
-	  .query('SELECT * FROM users WHERE username = $1', [username])
-	  .then(results => {
+  console.log('here local-signup', username, password)
+  client
+    .query('SELECT * FROM users WHERE username = $1', [username])
+    .then(results => {
       if (results.rows.length > 0) {
-				console.log('username is already taken!');
-				return cb(null, false);
-			}
-			else {
-			  client
-			  	.query('INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *',
-			               [username, password])
-			    .then(results => {
-			  		console.log('signup strategy clear!', results.rows[0]);
-			  		return cb(null, results.rows[0]);
-			  	})
-			    .catch(e => { 
-			  		console.error(e);
-			  	  return cb(null, false)
-			  	})
-			}
-		})
-	  .catch(e => {
-			console.error(e);
-			res.render('signup.ejs');
-		})
+        console.log('username is already taken!');
+        return cb(null, false);
+      }
+      else {
+        client
+          .query('INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *',
+                 [username, password])
+          .then(results => {
+            console.log('signup strategy clear!', results.rows[0]);
+            return cb(null, results.rows[0]);
+          })
+          .catch(e => { 
+            console.error(e);
+            return cb(null, false)
+          })
+      }
+    })
+    .catch(e => {
+      console.error(e);
+      res.render('signup.ejs');
+    })
 }))
 // --
 
 passport.serializeUser(function(user, cb) {
   process.nextTick(function() {
-		console.log('serializer called!', user);
+                console.log('serializer called!', user);
     cb(null, { id: user.id, username: user.username });
   });
 });
 
 passport.deserializeUser(function(user, cb) {
-	console.log('deserializer called!', user);
+        console.log('deserializer called!', user);
   process.nextTick(function() {
     return cb(null, user);
   });
@@ -95,8 +94,8 @@ router.use(passport.session());
 
 
 router.get('/login', function(req, res, next) {
-	console.log('/login get!', req.user);
-	res.render('login.ejs');
+        console.log('/login get!', req.user);
+        res.render('login.ejs');
 });
 
 router.post('/login/password', passport.authenticate('local', {
@@ -110,54 +109,54 @@ router.get('/logout', function(req, res, next) {
 });
 
 router.get('/signup', function(req, res, next) {
-	res.render('signup.ejs');
+        res.render('signup.ejs');
 })
 
 router.post('/signup', passport.authenticate('local-signup',
   {
-		successRedirect: '/images',
-		failureRedirect: '/signup',
-	}
+                successRedirect: '/images',
+                failureRedirect: '/signup',
+        }
 ))
 
 // router.post('/signup', function(req, res, next) {
-// 	const username = req.body.username;
-// 	const password = req.body.password;
-// 	const password_confirmation = req.body.password_confirmation;
-// 	client
-// 	  .query('SELECT * FROM users WHERE username = $1', [username])
-// 	  .then(results => {
-// 			if (results.rows.length > 0) {
-// 				res.redirect('/signup');
-// 				console.log('username is already taken!');
-// 			}
+//      const username = req.body.username;
+//      const password = req.body.password;
+//      const password_confirmation = req.body.password_confirmation;
+//      client
+//        .query('SELECT * FROM users WHERE username = $1', [username])
+//        .then(results => {
+//                      if (results.rows.length > 0) {
+//                              res.redirect('/signup');
+//                              console.log('username is already taken!');
+//                      }
 // 
-// 			else if (username === '' || password === '' || password_confirmation === '') {
-//     		console.error('form can not be blank!');
-//     		res.render('signup.js');
-//     	}
-//     	else if (password !== password_confirmation) {
+//                      else if (username === '' || password === '' || password_confirmation === '') {
+//              console.error('form can not be blank!');
+//              res.render('signup.js');
+//      }
+//      else if (password !== password_confirmation) {
 //         console.log('password and password_confirmation must be same!')
-//     		res.render('signup.ejs');
-//     	}
-//     	else {
+//              res.render('signup.ejs');
+//      }
+//      else {
 //         client
-//     		  .query('INSERT INTO users (username, password) VALUES ($1, $2)',
-//     			       [username, password])
-//     		  .then(results => {
-//     				passport.authenticate('local'), function(req, res) {
+//                .query('INSERT INTO users (username, password) VALUES ($1, $2)',
+//                             [username, password])
+//                .then(results => {
+//                              passport.authenticate('local'), function(req, res) {
 //               res.redirect('/images');
 //             }
-//     			})
-//     		  .catch(e => {
-//     				console.error('Something wrong!');
-//     			})
-//     	}
+//                      })
+//                .catch(e => {
+//                              console.error('Something wrong!');
+//                      })
+//      }
 //   })
-// 	.catch(e => {
-// 		console.error(e);
-// 		res.render('signup.ejs');
-// 	})
+//      .catch(e => {
+//              console.error(e);
+//              res.render('signup.ejs');
+//      })
 // })
 
 

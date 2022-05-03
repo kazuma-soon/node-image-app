@@ -7,7 +7,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', (req, res, next) => {
-	res.redirect('/images');
+  res.redirect('/images');
 })
 
 module.exports = router;
