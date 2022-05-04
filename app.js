@@ -20,6 +20,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// authorization in passport.js
+require('./config/passport.js')(app);
+
 // routes
 app.use('/', indexRouter);
 app.use('/', authRouter);
