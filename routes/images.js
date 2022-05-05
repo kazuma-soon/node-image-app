@@ -1,7 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
 
+require('dotenv').config();
+const fs = require('fs');
+// const aws = require('aws-sdk');
+// const s3 = new aws.S3({
+//   accessKeyId: process.env.accessKeyId,
+//   secretAccessKey: process.env.secretAccessKey,
+//   region: process.env.region,
+// });
+// const multerS3 = require('multer-s3');
 // -- multer
 const multer  = require('multer')
 const storage = multer.diskStorage({
@@ -14,16 +22,18 @@ const storage = multer.diskStorage({
   }
 })
 const upload = multer({ storage: storage })
-
-// -- pg
-//const { Client } = require('pg');
-//const client = new Client({
-//	user: 'postgres',
-//  host: 'localhost',
-//  database: 'node_image_app',
-//  port: 5432,
-//});
-//client.connect();
+// const upload = multer({
+//   storage: multerS3({
+//     s3: s3,
+//     bucket: 'node-image-app2',
+//     metadata: function (req, file, cb) {
+//       cb(null, {fieldName: file.fieldname});
+//     },
+//     key: function (req, file, cb) {
+//       cb(null, Date.now().toString())
+//     }
+//   })
+// })
 
 // Get images
 router.get('/images', (req, res, next) => {
