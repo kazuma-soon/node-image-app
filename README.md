@@ -18,3 +18,6 @@ https://node-image-app.herokuapp.com/
 - bootstrap
 - JavaScript 
 
+### インフラ
+- Heroku
+- AWS S3(課題あり)
